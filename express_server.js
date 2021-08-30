@@ -12,10 +12,15 @@ app.get('/', (req, res) => {
   res.send('Hello!');
 });
 
-//adding additional endpoints
+//adding additional endpoints to view our possible urls
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
+
+//sending html code for the client
+app.get('/hello', (req, res) => {
+  res.send('<html><body>Hello <b>World</b></body></html>\n')
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
