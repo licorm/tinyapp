@@ -6,16 +6,6 @@ const bodyParser = require('body-parser');
 
 app.use(bodyParser.urlencoded({extended: true}));
 
-//function to generate a random tinyURL
-const generateRandomString = function(req.body.longURL) {
-  let characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  let newShortURL = '';
-  for (let i = 0; i < 7; i++) {
-    newShortURL += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return newShortURL;
-}
-
 //setting ejs as the view engine
 app.set('view engine', 'ejs');
 
@@ -57,8 +47,24 @@ app.get('/urls/:shortURL', (req, res) => {
 
 //define route to match URL POST request
 app.post('/urls', (req, res) => {
-  console.log(req.body);
-  res.send('OK');
+  //function to generate a random tinyURL
+  const generateRandomString = function() {
+    let newShortURL = '';
+    let characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    for (let i = 0; i < 6; i++) {
+      newShortURL += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return newShortURL;
+  };
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL;
+  res.redirect(`/urls/${shortURL}`);
+});
+
+app.get('/u/:shortURL', (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 })
 
 app.listen(PORT, () => {
