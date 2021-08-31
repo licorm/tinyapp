@@ -30,7 +30,7 @@ app.get('/hello', (req, res) => {
 
 //passing url data to our template and to our webpage
 app.get('/urls', (req,res) => {
-  const templateVars = { urls: urlDatabase};
+  const templateVars = { urls : urlDatabase};
   res.render('urls_index', templateVars);
 });
 
@@ -66,6 +66,15 @@ app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
+
+//delete URL
+app.post('/urls/:shortURL/delete', (req, res) => {
+  const shortURL = req.params.shortURL;
+
+  delete urlDatabase[shortURL];
+
+  res.redirect('/urls');
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
