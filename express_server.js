@@ -45,17 +45,18 @@ app.get('/urls/:shortURL', (req, res) => {
   res.render('urls_show', templateVars);
 });
 
+//function to generate a random tinyURL
+const generateRandomString = function() {
+  let newShortURL = '';
+  let characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  for (let i = 0; i < 6; i++) {
+    newShortURL += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return newShortURL;
+};
+
 //define route to match URL POST request
 app.post('/urls', (req, res) => {
-  //function to generate a random tinyURL
-  const generateRandomString = function() {
-    let newShortURL = '';
-    let characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    for (let i = 0; i < 6; i++) {
-      newShortURL += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return newShortURL;
-  };
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
@@ -76,6 +77,15 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.redirect('/urls');
 });
 
+//edit URL
+app.post('/urls/:shortURL', (req, res) => {
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
+  
+  urlDatabase[shortURL] = longURL;
+
+  res.redirect(`/urls/${shortURL}`);
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
