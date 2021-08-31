@@ -2,6 +2,9 @@
 const express = require('express');
 const app = express();
 const PORT = 8080;
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded({extended: true}));
 
 //setting ejs as the view engine
 app.set('view engine', 'ejs');
@@ -29,6 +32,11 @@ app.get('/hello', (req, res) => {
 app.get('/urls', (req,res) => {
   const templateVars = { urls: urlDatabase};
   res.render('urls_index', templateVars);
+});
+
+//adding new urls to submit
+app.get('/urls/new', (req, res) => {
+  res.render('urls_new');
 });
 
 //display single URL and its shortened form
