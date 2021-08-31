@@ -6,6 +6,16 @@ const bodyParser = require('body-parser');
 
 app.use(bodyParser.urlencoded({extended: true}));
 
+//function to generate a random tinyURL
+const generateRandomString = function(req.body.longURL) {
+  let characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  let newShortURL = '';
+  for (let i = 0; i < 7; i++) {
+    newShortURL += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return newShortURL;
+}
+
 //setting ejs as the view engine
 app.set('view engine', 'ejs');
 
