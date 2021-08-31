@@ -25,7 +25,7 @@ app.get('/urls.json', (req, res) => {
 
 //sending html code for the client
 app.get('/hello', (req, res) => {
-  res.send('<html><body>Hello <b>World</b></body></html>\n')
+  res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
 //passing url data to our template and to our webpage
@@ -43,7 +43,7 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render('urls_show', templateVars);
-})
+});
 
 //define route to match URL POST request
 app.post('/urls', (req, res) => {
@@ -65,7 +65,7 @@ app.post('/urls', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
-})
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
