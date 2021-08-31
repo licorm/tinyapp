@@ -45,6 +45,11 @@ app.get('/urls/:shortURL', (req, res) => {
   res.render('urls_show', templateVars);
 })
 
+//define route to match URL POST request
+app.post('/urls', (req, res) => {
+  console.log(req.body);
+  res.send('OK');
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
