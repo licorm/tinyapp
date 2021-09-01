@@ -156,7 +156,6 @@ app.post('/register', (req, res) => {
   }
   if (emailExists(users, req.body.email)) {
     res.status(400).send('Account with this email already exists!');
-    console.log(users);
     return;
   }
   const userID = generateRandomString();

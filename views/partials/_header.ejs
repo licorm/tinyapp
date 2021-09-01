@@ -19,11 +19,16 @@
         </div>
       </form>
     <% } else { %>
-      <form class="form-inline" action="/login" method="POST">
+      <form class="form-inline" action="/login" method="GET">
         <div class="form-group mb-2">
-          <label for="userID", style="color:indigo">User ID here:</label>
-          <input class="form-control" type="text" name="userID" placeholder="UserID" style="width: 300px; margin: 1em">
-          <button type="submit" class="btn btn-primary">Enter</button>
+          <label for="login" class="mx-sm-3" style="color:indigo"></label>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+      </form>
+      <form class="form-inline" action="/register" method="GET">
+        <div class="form-group mb-2">
+          <label for="register" class="mx-sm-3" style="color:indigo"></label>
+          <button type="submit" class="btn btn-primary">Register</button>
         </div>
       </form>
     <% } %>
