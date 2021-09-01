@@ -83,6 +83,12 @@ app.get('/urls/:shortURL', (req, res) => {
 app.get('/register', (req, res) => {
   const templateVars = {userID: users[req.cookies['user_ID']]};
   res.render('urls_registration', templateVars);
+});
+
+//add url data to our login template
+app.get('/login', (req, res) => {
+  const templateVars = { email: req.body.email, password: req.body.password, userID: users[req.cookies['user_ID']] };
+  res.render('urls_login', templateVars);
 })
 
 //function to generate a random tinyURL
