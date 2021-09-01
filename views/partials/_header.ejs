@@ -11,18 +11,18 @@
       </div>
     </div>
 
-    <% if (username) { %>
+    <% if (userID) { %>
       <form class="form-inline" action="/logout" method="POST">
         <div class="form-group">
-          <label for="username" class="mx-sm-3">Logged in as <%= username %>!</label>
+          <label for="userID" class="mx-sm-3">Logged in as <%= userID['email'] %>!</label>
           <button type="submit" class="btn btn-primary">Logout</button>
         </div>
       </form>
     <% } else { %>
       <form class="form-inline" action="/login" method="POST">
         <div class="form-group mb-2">
-          <label for="username", style="color:indigo"></label>
-          <input class="form-control" type="text" name="username" placeholder="Username" style="width: 300px; margin: 1em">
+          <label for="userID", style="color:indigo">User ID here:</label>
+          <input class="form-control" type="text" name="userID" placeholder="UserID" style="width: 300px; margin: 1em">
           <button type="submit" class="btn btn-primary">Enter</button>
         </div>
       </form>
