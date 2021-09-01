@@ -55,6 +55,12 @@ app.get('/urls/:shortURL', (req, res) => {
   res.render('urls_show', templateVars);
 });
 
+//send url data to our registration template
+app.get('/register', (req, res) => {
+  const templateVars = { username: req.cookies["username"]  };
+  res.render('urls_registration', templateVars);
+})
+
 //function to generate a random tinyURL
 const generateRandomString = function() {
   let newShortURL = '';
