@@ -16,6 +16,20 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com'
 };
 
+//users database
+const users = { 
+  "userID": {
+    id: "userID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2ID": {
+    id: "user2ID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
 app.get('/', (req, res) => {
   res.send('Hello!');
 });
@@ -117,6 +131,21 @@ app.post('/logout', (req, res) => {
 
   res.redirect('/urls');
 });
+
+//add register endpoint to store user data in database
+app.post('/register', (req, res) => {
+  const userID = generateRandomString();
+  users[userID] = { 
+    id: userID,
+    email: req.body.email,
+    password: req.body.password
+  };
+
+  res.cookie('user_ID', userID);
+  
+  res.redirect('/urls');
+});
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
