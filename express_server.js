@@ -28,6 +28,16 @@ const users = {
     email: "user2@example.com", 
     password: "dishwasher-funk"
   }
+};
+
+//function to lookup email of user
+const emailExists = function(userObj, emailInput) {
+  for (const user in userObj) {
+    if(userObj[user].email === emailInput) {
+      return true;
+    }
+  }
+  return false;
 }
 
 app.get('/', (req, res) => {
@@ -134,6 +144,15 @@ app.post('/logout', (req, res) => {
 
 //add register endpoint to store user data in database
 app.post('/register', (req, res) => {
+  if (req.body.email === '' || req.body.password === '') {
+    res.status(400).send('Please fill out email and password fields!');
+    return;
+  }
+  if (emailExists(users, req.body.email)) {
+    res.status(400).send('Account with this email already exists!');
+    console.log(users);
+    return;
+  }
   const userID = generateRandomString();
   users[userID] = { 
     id: userID,
