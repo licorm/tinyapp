@@ -3,11 +3,17 @@ const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+//const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
+const cookieSession = require('cookie-session');
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+//app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2'],
+}));
+
 
 //setting ejs as the view engine
 app.set('view engine', 'ejs');
@@ -27,6 +33,9 @@ const urlDatabase = {
 //hashing current passwords for tests
 const hashedPassword1 = bcrypt.hashSync('123', 10);
 const hashedPassword2 = bcrypt.hashSync('dishwasher-funk', 10);
+
+//encrypted cookies
+
 
 //users database
 const users = {
@@ -84,12 +93,12 @@ app.get('/hello', (req, res) => {
 //good
 //passing url data to our template and to our webpage
 app.get('/urls', (req,res) => {
-  const userID = req.cookies['user_ID'];
+  const userID = req.session.userID;
   const urlsToView = urlsForUser(userID, urlDatabase);
 
   const templateVars = {
     urls : urlsToView,
-    userID: users[req.cookies['user_ID']]
+    userID: users[req.session.userID]
   };
   res.render('urls_index', templateVars);
 });
@@ -97,10 +106,10 @@ app.get('/urls', (req,res) => {
 //good
 //adding new urls to submit
 app.get('/urls/new', (req, res) => {
-  if (!req.cookies['user_ID']) {
+  if (!req.session.userID) {
     res.redirect('/login');
   }
-  const templateVars = { userID: users[req.cookies['user_ID']] };
+  const templateVars = { userID: users[req.session.userID] };
   res.render('urls_new', templateVars);
 });
 
@@ -109,7 +118,7 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   
-  if (!req.cookies['user_ID']) {
+  if (!req.session.userID) {
     res.status(403).send("Cannot access URL without signing in first");
     return;
   }
@@ -119,32 +128,32 @@ app.get('/urls/:shortURL', (req, res) => {
     return;
   }
 
-  const userID = req.cookies['user_ID'];
+  const userID = req.session.userID;
   const urlsToView = urlsForUser(userID, urlDatabase);
   for (const url in urlsToView) {
-    if (url === shortURL) {
-      const templateVars = {
-        shortURL: req.params.shortURL,
-        longURL: urlDatabase[shortURL].longURL,
-        userID: users[req.cookies['user_ID']]
-      };
-    
-      res.render('urls_show', templateVars);
+    if (!url === shortURL) {
+      res.status(400).send("You don't have access to that URL");
     }
   }
-  
-  res.status(400).send("You don't have access to that URL");
+
+const templateVars = {
+  shortURL: req.params.shortURL,
+  longURL: urlDatabase[shortURL].longURL,
+  userID: users[req.session.userID]
+};
+
+res.render('urls_show', templateVars);
 });
 
 //send url data to our registration template
 app.get('/register', (req, res) => {
-  const templateVars = {userID: users[req.cookies['user_ID']]};
+  const templateVars = {userID: users[req.session.userID]};
   res.render('urls_registration', templateVars);
 });
 
 //add url data to our login template
 app.get('/login', (req, res) => {
-  const templateVars = { userID: users[req.cookies['user_ID']] };
+  const templateVars = { userID: users[req.session.userID] };
   res.render('urls_login', templateVars);
 });
 
@@ -161,13 +170,13 @@ const generateRandomString = function() {
 //define route to match URL POST request
 //checked
 app.post('/urls', (req, res) => {
-  if (!req.cookies['user_ID']) {
+  if (!req.session.userID) {
     res.status(403).send("Cannot add new URL without signing in first");
     return;
   }
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  const userID = (req.cookies['user_ID']);
+  const userID = (req.session.userID);
   urlDatabase[shortURL] = { longURL, userID};
   res.redirect(`/urls/${shortURL}`);
 });
@@ -184,7 +193,7 @@ app.get('/u/:shortURL', (req, res) => {
 //delete URL
 //good
 app.post('/urls/:shortURL/delete', (req, res) => {
-  if (!req.cookies['user_ID']) {
+  if (!req.session.userID) {
     res.status(403).send("Cannot delete URL without signing in first");
     return;
   }
@@ -199,7 +208,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 //edit URL
 //seems fine
 app.post('/urls/:shortURL', (req, res) => {
-  if (!req.cookies['user_ID']) {
+  if (!req.session.userID) {
     res.status(403).send("Cannot edit URL without signing in first");
     return;
   }
@@ -207,7 +216,7 @@ app.post('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
   
-  const userID = (req.cookies['user_ID']);
+  const userID = (req.session.userID);
   urlDatabase[shortURL] = { longURL, userID };
 
   res.redirect(`/urls/${shortURL}`);
@@ -229,14 +238,14 @@ app.post('/login', (req, res) => {
     return;
   }
 
-  res.cookie('user_ID', userID);
+  req.session.userID = userID;
  
   res.redirect('/urls');
 });
 
 //logout/clear cookie
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_ID');
+  req.session = null;
 
   res.redirect('/urls');
 });
@@ -257,15 +266,15 @@ app.post('/register', (req, res) => {
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
-
   const userID = generateRandomString();
+
   users[userID] = {
     id: userID,
     email: req.body.email,
     password: hashedPassword
   };
 
-  res.cookie('user_ID', userID);
+  req.session.userID = userID;
   
   res.redirect('/urls');
 });
