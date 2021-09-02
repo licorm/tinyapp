@@ -94,6 +94,11 @@ app.get('/urls/new', (req, res) => {
 //this is the issue!!
 app.get('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
+  
+  if (urlDatabase[shortURL] === undefined) {
+    res.status(400).send("That shortend URL doesn't exist");
+    return;
+  };
 
   const templateVars = { 
     shortURL: req.params.shortURL, 
@@ -145,6 +150,7 @@ app.post('/urls', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   let shortURL = req.params.shortURL
   const longURL = urlDatabase[shortURL].longURL;
+
   res.redirect(longURL);
 });
 
@@ -161,6 +167,11 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 //edit URL
 //seems fine
 app.post('/urls/:shortURL', (req, res) => {
+  if(!req.cookies['user_ID']) {
+    res.status(403).send("Cannot edit URL without signing in first");
+    return;
+  }
+  
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
   
