@@ -136,13 +136,13 @@ app.get('/urls/:shortURL', (req, res) => {
     }
   }
 
-const templateVars = {
-  shortURL: req.params.shortURL,
-  longURL: urlDatabase[shortURL].longURL,
-  userID: users[req.session.userID]
-};
+  const templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[shortURL].longURL,
+    userID: users[req.session.userID]
+  };
 
-res.render('urls_show', templateVars);
+  res.render('urls_show', templateVars);
 });
 
 //send url data to our registration template
