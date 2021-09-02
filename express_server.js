@@ -29,13 +29,13 @@ const urlDatabase = {
 
 //users database
 const users = { 
-  "user1ID": {
-    id: "user1ID", 
+  "aJ48lW": {
+    id: "aJ48lW", 
     email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
+    password: "123"
   },
- "user2ID": {
-    id: "user2ID", 
+ "J48lW": {
+    id: "J48lW", 
     email: "user2@example.com", 
     password: "dishwasher-funk"
   }
@@ -50,7 +50,18 @@ const emailExists = function(userObj, emailInput) {
     }
   }
   return false;
-}
+};
+
+//function to determine the URLs of the logged in user
+const urlsForUser = function(id, urlList) {
+  const yourURLs = {};
+  for (const shortURL in urlList) {
+    if (urlList[shortURL].userID === id) {
+      yourURLs[shortURL] = { longURL: urlList[shortURL].longURL, userID: urlList[shortURL].userID }
+    }
+  }
+  return yourURLs;
+};
 
 //good
 app.get('/', (req, res) => {
@@ -72,8 +83,13 @@ app.get('/hello', (req, res) => {
 //good
 //passing url data to our template and to our webpage
 app.get('/urls', (req,res) => {
+  const userID = req.cookies['user_ID'];
+  const urlsToView = urlsForUser(userID, urlDatabase);
+  console.log([req.cookies['user_ID']]);
+  console.log(urlsToView)
+
   const templateVars = { 
-    urls : urlDatabase,
+    urls : urlsToView,
     userID: users[req.cookies['user_ID']]
   };
   res.render('urls_index', templateVars);

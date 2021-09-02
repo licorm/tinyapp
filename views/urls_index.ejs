@@ -21,6 +21,8 @@
           <th scope="col">Edit URL</th>
         </tr>
       </thead>
+      
+      <% if (userID) { %>
       <tbody style='color:blueviolet'>
         <% for(let shortURL in urls) { %>
           <tr>
@@ -34,6 +36,9 @@
             </form>
           </tr>
         <% } %>
+      <% } else { %>
+      <p style="color:red">Please login or register to see URLs</p>
+      <% } %>
       </tbody>
     </table>
   </main>
