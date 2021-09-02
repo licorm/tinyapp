@@ -4,6 +4,7 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -11,10 +12,6 @@ app.use(cookieParser());
 //setting ejs as the view engine
 app.set('view engine', 'ejs');
 
-// const urlDatabase = {
-//   'b2xVn2': 'http://www.lighthouselabs.ca',
-//   '9sm5xK': 'http://www.google.com'
-// };
 
 const urlDatabase = {
   b6UTxQ: {
@@ -27,17 +24,21 @@ const urlDatabase = {
   }
 };
 
+//hashing current passwords for tests
+const hashedPassword1 = bcrypt.hashSync('123', 10);
+const hashedPassword2 = bcrypt.hashSync('dishwasher-funk', 10);
+
 //users database
 const users = {
   "aJ48lW": {
     id: "aJ48lW",
     email: "user@example.com",
-    password: "123"
+    password: hashedPassword1
   },
   "J48lW": {
     id: "J48lW",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: hashedPassword2
   }
 };
 
@@ -220,7 +221,10 @@ app.post('/login', (req, res) => {
     return;
   }
   
-  if (users[userID].password !== req.body.password) {
+  //checking to see if password matched encrypted password
+  const password = req.body.password;
+  const hashedPassword = users[userID].password;
+  if (!bcrypt.compareSync(password, hashedPassword)) {
     res.status(403).send("Wrong password :(");
     return;
   }
@@ -243,15 +247,22 @@ app.post('/register', (req, res) => {
     res.status(400).send('Please fill out email and password fields!');
     return;
   }
+
   if (emailExists(users, req.body.email)[0]) {
     res.status(400).send('Account with this email already exists!');
     return;
   }
+
+  //encrypt our passwords as they come in
+  const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
+
   const userID = generateRandomString();
   users[userID] = {
     id: userID,
     email: req.body.email,
-    password: req.body.password
+    password: hashedPassword
   };
 
   res.cookie('user_ID', userID);
