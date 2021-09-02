@@ -42,6 +42,7 @@ const users = {
 };
 
 //function to lookup email of user
+//good
 const emailExists = function(userObj, emailInput) {
   for (const user in userObj) {
     if(userObj[user].email === emailInput) {
@@ -51,20 +52,24 @@ const emailExists = function(userObj, emailInput) {
   return false;
 }
 
+//good
 app.get('/', (req, res) => {
   res.send('Hello!');
 });
 
 //adding additional endpoints to view our possible urls
+//good
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
 //sending html code for the client
+//good
 app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
+//good
 //passing url data to our template and to our webpage
 app.get('/urls', (req,res) => {
   const templateVars = { 
@@ -74,6 +79,7 @@ app.get('/urls', (req,res) => {
   res.render('urls_index', templateVars);
 });
 
+//good
 //adding new urls to submit
 app.get('/urls/new', (req, res) => {
   if(!req.cookies['user_ID']) {
@@ -83,13 +89,18 @@ app.get('/urls/new', (req, res) => {
   res.render('urls_new', templateVars);
 });
 
+
 //display single URL and its shortened form
+//this is the issue!!
 app.get('/urls/:shortURL', (req, res) => {
+  const shortURL = req.params.shortURL;
+
   const templateVars = { 
     shortURL: req.params.shortURL, 
-    longURL: urlDatabase[req.params.shortURL].longURL,
+    longURL: urlDatabase[shortURL].longURL,
     userID: users[req.cookies['user_ID']]  
   };
+
   res.render('urls_show', templateVars);
 });
 
@@ -116,6 +127,7 @@ const generateRandomString = function() {
 };
 
 //define route to match URL POST request
+//checked
 app.post('/urls', (req, res) => {
   if(!req.cookies['user_ID']) {
     res.status(403).send("Cannot add new URL without signing in first");
@@ -123,21 +135,21 @@ app.post('/urls', (req, res) => {
   }
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  console.log(longURL)
-  console.log(shortURL)
   userID = (req.cookies['user_ID']) 
-  //urlDatabase[shortURL] = shortURL;
   urlDatabase[shortURL] = { longURL, userID};
-  console.log(urlDatabase)
   res.redirect(`/urls/${shortURL}`);
 });
 
+//seems fine
+//click on shortURL => redirects to page
 app.get('/u/:shortURL', (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
+  let shortURL = req.params.shortURL
+  const longURL = urlDatabase[shortURL].longURL;
   res.redirect(longURL);
 });
 
 //delete URL
+//good
 app.post('/urls/:shortURL/delete', (req, res) => {
   const shortURL = req.params.shortURL;
 
@@ -147,11 +159,13 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 });
 
 //edit URL
+//seems fine
 app.post('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
   
-  urlDatabase[shortURL] = longURL;
+  userID = (req.cookies['user_ID']) 
+  urlDatabase[shortURL] = { longURL, userID };
 
   res.redirect(`/urls/${shortURL}`);
 });
