@@ -184,7 +184,7 @@ app.post('/urls/:shortURL', (req, res) => {
 //Login Route
 app.post('/login', (req, res) => {
   let userID = emailExistsInDatabase(users, req.body.email);
-  if (emailExistsInDatabase(users, req.body.email) === false) {
+  if (!emailExistsInDatabase(users, req.body.email)) {
     res.status(403).send("There is no account with that email :(");
     return;
   }

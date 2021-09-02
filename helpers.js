@@ -5,7 +5,6 @@ const emailExistsInDatabase = function(userObj, emailInput) {
       return user;
     }
   }
-  return false;
 };
 
 //function to determine the URLs of the logged in user
