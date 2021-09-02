@@ -3,12 +3,14 @@ const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
-//const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
+const { emailExistsInDatabase } = require('./helpers');
+const { urlsForUser } = require('./helpers');
+const { generateRandomString } = require('./helpers');
 
 app.use(bodyParser.urlencoded({extended: true}));
-//app.use(cookieParser());
+
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2'],
@@ -34,9 +36,6 @@ const urlDatabase = {
 const hashedPassword1 = bcrypt.hashSync('123', 10);
 const hashedPassword2 = bcrypt.hashSync('dishwasher-funk', 10);
 
-//encrypted cookies
-
-
 //users database
 const users = {
   "aJ48lW": {
@@ -51,46 +50,21 @@ const users = {
   }
 };
 
-//function to lookup email of user
-//good
-const emailExists = function(userObj, emailInput) {
-  for (const user in userObj) {
-    if (userObj[user].email === emailInput) {
-      return [true, user];
-    }
-  }
-  return false;
-};
-
-//function to determine the URLs of the logged in user
-const urlsForUser = function(id, urlList) {
-  const yourURLs = {};
-  for (const shortURL in urlList) {
-    if (urlList[shortURL].userID === id) {
-      yourURLs[shortURL] = { longURL: urlList[shortURL].longURL, userID: urlList[shortURL].userID };
-    }
-  }
-  return yourURLs;
-};
-
-//good
+//hello page
 app.get('/', (req, res) => {
   res.send('Hello!');
 });
 
 //adding additional endpoints to view our possible urls
-//good
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
 //sending html code for the client
-//good
 app.get('/hello', (req, res) => {
   res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
-//good
 //passing url data to our template and to our webpage
 app.get('/urls', (req,res) => {
   const userID = req.session.userID;
@@ -103,7 +77,6 @@ app.get('/urls', (req,res) => {
   res.render('urls_index', templateVars);
 });
 
-//good
 //adding new urls to submit
 app.get('/urls/new', (req, res) => {
   if (!req.session.userID) {
@@ -157,18 +130,7 @@ app.get('/login', (req, res) => {
   res.render('urls_login', templateVars);
 });
 
-//function to generate a random tinyURL
-const generateRandomString = function() {
-  let newShortURL = '';
-  let characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  for (let i = 0; i < 6; i++) {
-    newShortURL += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return newShortURL;
-};
-
 //define route to match URL POST request
-//checked
 app.post('/urls', (req, res) => {
   if (!req.session.userID) {
     res.status(403).send("Cannot add new URL without signing in first");
@@ -181,7 +143,6 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-//seems fine
 //click on shortURL => redirects to page
 app.get('/u/:shortURL', (req, res) => {
   let shortURL = req.params.shortURL;
@@ -191,7 +152,6 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 //delete URL
-//good
 app.post('/urls/:shortURL/delete', (req, res) => {
   if (!req.session.userID) {
     res.status(403).send("Cannot delete URL without signing in first");
@@ -206,7 +166,6 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 });
 
 //edit URL
-//seems fine
 app.post('/urls/:shortURL', (req, res) => {
   if (!req.session.userID) {
     res.status(403).send("Cannot edit URL without signing in first");
@@ -224,8 +183,8 @@ app.post('/urls/:shortURL', (req, res) => {
 
 //Login Route
 app.post('/login', (req, res) => {
-  let userID = emailExists(users, req.body.email)[1];
-  if (!emailExists(users, req.body.email)[0]) {
+  let userID = emailExistsInDatabase(users, req.body.email)[1];
+  if (!emailExistsInDatabase(users, req.body.email)[0]) {
     res.status(403).send("There is no account with that email :(");
     return;
   }
@@ -257,7 +216,7 @@ app.post('/register', (req, res) => {
     return;
   }
 
-  if (emailExists(users, req.body.email)[0]) {
+  if (emailExistsInDatabase(users, req.body.email)[0]) {
     res.status(400).send('Account with this email already exists!');
     return;
   }
