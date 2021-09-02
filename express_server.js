@@ -107,7 +107,6 @@ app.get('/urls/new', (req, res) => {
 
 
 //display single URL and its shortened form
-//this is the issue!!
 app.get('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   
@@ -116,13 +115,21 @@ app.get('/urls/:shortURL', (req, res) => {
     return;
   };
 
-  const templateVars = { 
-    shortURL: req.params.shortURL, 
-    longURL: urlDatabase[shortURL].longURL,
-    userID: users[req.cookies['user_ID']]  
-  };
-
-  res.render('urls_show', templateVars);
+  const userID = req.cookies['user_ID'];
+  const urlsToView = urlsForUser(userID, urlDatabase);
+  for (const url in urlsToView) {
+    if (url === shortURL) {
+      const templateVars = { 
+        shortURL: req.params.shortURL, 
+        longURL: urlDatabase[shortURL].longURL,
+        userID: users[req.cookies['user_ID']]  
+      };
+    
+      res.render('urls_show', templateVars);
+    }
+  }
+  
+  res.status(400).send("You don't have access to that URL");
 });
 
 //send url data to our registration template
