@@ -183,8 +183,8 @@ app.post('/urls/:shortURL', (req, res) => {
 
 //Login Route
 app.post('/login', (req, res) => {
-  let userID = emailExistsInDatabase(users, req.body.email)[1];
-  if (!emailExistsInDatabase(users, req.body.email)[0]) {
+  let userID = emailExistsInDatabase(users, req.body.email);
+  if (emailExistsInDatabase(users, req.body.email) === false) {
     res.status(403).send("There is no account with that email :(");
     return;
   }
@@ -216,7 +216,7 @@ app.post('/register', (req, res) => {
     return;
   }
 
-  if (emailExistsInDatabase(users, req.body.email)[0]) {
+  if (emailExistsInDatabase(users, req.body.email)) {
     res.status(400).send('Account with this email already exists!');
     return;
   }

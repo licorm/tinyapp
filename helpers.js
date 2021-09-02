@@ -2,7 +2,7 @@
 const emailExistsInDatabase = function(userObj, emailInput) {
   for (const user in userObj) {
     if (userObj[user].email === emailInput) {
-      return [true, user];
+      return user;
     }
   }
   return false;
