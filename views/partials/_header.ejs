@@ -13,24 +13,18 @@
 
     <% if (userID) { %>
       <form class="form-inline" action="/logout" method="POST">
-        <div class="form-group">
+        <div class="form-group mb-2">
           <label for="userID" class="mx-sm-3">Logged in as <%= userID['email'] %>!</label>
           <button type="submit" class="btn btn-primary">Logout</button>
         </div>
       </form>
     <% } else { %>
-      <form class="form-inline" action="/login" method="GET">
-        <div class="form-group mb-2">
-          <label for="login" class="mx-sm-3" style="color:indigo"></label>
-          <button type="submit" class="btn btn-primary">Login</button>
+      <div class="collapse navbar-collapse, d-flex align-items-end" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" style="color:indigo" href="/login">Login</a>
+          <a class="nav-item nav-link" style="color:indigo" href="/register">Register</a>
         </div>
-      </form>
-      <form class="form-inline" action="/register" method="GET">
-        <div class="form-group mb-2">
-          <label for="register" class="mx-sm-3" style="color:indigo"></label>
-          <button type="submit" class="btn btn-primary">Register</button>
-        </div>
-      </form>
+      </div>
     <% } %>
   </nav>
 </header>

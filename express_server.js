@@ -34,7 +34,7 @@ const users = {
 const emailExists = function(userObj, emailInput) {
   for (const user in userObj) {
     if(userObj[user].email === emailInput) {
-      return true;
+      return [true, user];
     }
   }
   return false;
@@ -87,7 +87,7 @@ app.get('/register', (req, res) => {
 
 //add url data to our login template
 app.get('/login', (req, res) => {
-  const templateVars = { email: req.body.email, password: req.body.password, userID: users[req.cookies['user_ID']] };
+  const templateVars = { userID: users[req.cookies['user_ID']] };
   res.render('urls_login', templateVars);
 })
 
@@ -135,9 +135,10 @@ app.post('/urls/:shortURL', (req, res) => {
 
 //Login Route
 app.post('/login', (req, res) => {
-  let userID = req.body.userID;
-  res.cookie('user_ID', userID);
+  let userID = emailExists(users, req.body.email)[1];
 
+  res.cookie('user_ID', userID);
+ 
   res.redirect('/urls');
 });
 
@@ -154,7 +155,7 @@ app.post('/register', (req, res) => {
     res.status(400).send('Please fill out email and password fields!');
     return;
   }
-  if (emailExists(users, req.body.email)) {
+  if (emailExists(users, req.body.email)[0]) {
     res.status(400).send('Account with this email already exists!');
     return;
   }
