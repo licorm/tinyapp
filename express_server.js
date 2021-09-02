@@ -18,8 +18,8 @@ const urlDatabase = {
 
 //users database
 const users = { 
-  "userID": {
-    id: "userID", 
+  "user1ID": {
+    id: "user1ID", 
     email: "user@example.com", 
     password: "purple-monkey-dinosaur"
   },
@@ -136,6 +136,15 @@ app.post('/urls/:shortURL', (req, res) => {
 //Login Route
 app.post('/login', (req, res) => {
   let userID = emailExists(users, req.body.email)[1];
+  if(!emailExists(users, req.body.email)[0]) {
+    res.status(403).send("There is no account with that email :(");
+    return;
+  }
+  
+  if(users[userID].password !== req.body.password) {
+    res.status(403).send("Wrong password :(");
+    return;
+  }
 
   res.cookie('user_ID', userID);
  
