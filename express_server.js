@@ -65,6 +65,9 @@ app.get('/urls', (req,res) => {
 
 //adding new urls to submit
 app.get('/urls/new', (req, res) => {
+  if(!req.cookies['user_ID']) {
+    res.redirect('/login');
+  }
   const templateVars = { userID: users[req.cookies['user_ID']] };
   res.render('urls_new', templateVars);
 });
@@ -103,6 +106,10 @@ const generateRandomString = function() {
 
 //define route to match URL POST request
 app.post('/urls', (req, res) => {
+  if(!req.cookies['user_ID']) {
+    res.status(403).send("Cannot add new URL without signing in first");
+    return;
+  }
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
