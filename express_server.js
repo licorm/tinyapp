@@ -199,7 +199,7 @@ app.post('/urls/:shortURL', (req, res) => {
 
   const userID = req.session.userID;
   const urlsToView = urlsForUser(userID, urlDatabase);
-  console.log(urlsToView)
+  
   if (urlBelongsToUser(urlsToView, shortURL) === false) {
     res.status(400).send("You don't have access to that URL");
     return;
