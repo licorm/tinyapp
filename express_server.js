@@ -8,6 +8,7 @@ const cookieSession = require('cookie-session');
 const { emailExistsInDatabase } = require('./helpers');
 const { urlsForUser } = require('./helpers');
 const { generateRandomString } = require('./helpers');
+const { urlBelongsToUser } = require('./helpers');
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -110,7 +111,7 @@ app.get('/urls/:shortURL', (req, res) => {
   const userID = (req.session.userID).toString();
   const urlsToView = urlsForUser(userID, urlDatabase);
 
-  if (Object.keys(urlsToView).length === 0) {
+  if (urlBelongsToUser(urlsToView, shortURL) === false) {
     res.status(400).send("You don't have access to that URL");
     return;
   }
@@ -153,6 +154,14 @@ app.post('/urls', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   let shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL].longURL;
+  
+  const userID = req.session.userID;
+  const urlsToView = urlsForUser(userID, urlDatabase);
+
+  if (urlBelongsToUser(urlsToView, shortURL) === false) {
+    res.status(400).send("You don't have access to that URL");
+    return;
+  }
 
   res.redirect(longURL);
 });
@@ -164,7 +173,14 @@ app.post('/urls/:shortURL/delete', (req, res) => {
     return;
   }
 
+  const userID = req.session.userID;
+  const urlsToView = urlsForUser(userID, urlDatabase);
   const shortURL = req.params.shortURL;
+
+  if (urlBelongsToUser(urlsToView, shortURL) === false) {
+    res.status(400).send("You don't have access to that URL");
+    return;
+  }
 
   delete urlDatabase[shortURL];
 
@@ -177,11 +193,17 @@ app.post('/urls/:shortURL', (req, res) => {
     res.status(403).send("Cannot edit URL without signing in first");
     return;
   }
-  
+
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
-  
-  const userID = (req.session.userID);
+
+  const userID = req.session.userID;
+  const urlsToView = urlsForUser(userID, urlDatabase);
+  console.log(urlsToView)
+  if (urlBelongsToUser(urlsToView, shortURL) === false) {
+    res.status(400).send("You don't have access to that URL");
+    return;
+  }
 
   urlDatabase[shortURL] = { longURL, userID };
 

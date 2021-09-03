@@ -29,9 +29,19 @@ const generateRandomString = function() {
   return newShortURL;
 };
 
+const urlBelongsToUser = function(urls, url) {
+  for (const item in urls) {
+    if (url === item) {
+      return true;
+    }
+  }
+  return false;
+};
+
 //export helper functions
 module.exports = { 
   emailExistsInDatabase,
   urlsForUser,
   generateRandomString,
+  urlBelongsToUser
 }
