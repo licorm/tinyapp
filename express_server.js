@@ -114,14 +114,7 @@ app.get('/urls/:shortURL', (req, res) => {
     res.status(400).send("You don't have access to that URL");
     return;
   }
-
-  for (const url in urlsToView) {
-    if (url !== shortURL || Object.keys(urlsToView).length === 0) {
-      res.status(400).send("You don't have access to that URL");
-      return;
-    }
-  }
-  console.log(urlsToView);
+  
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[shortURL].longURL,
@@ -189,6 +182,7 @@ app.post('/urls/:shortURL', (req, res) => {
   const longURL = req.body.longURL;
   
   const userID = (req.session.userID);
+
   urlDatabase[shortURL] = { longURL, userID };
 
   res.redirect(`/urls/${shortURL}`);

@@ -33,5 +33,5 @@ const generateRandomString = function() {
 module.exports = { 
   emailExistsInDatabase,
   urlsForUser,
-  generateRandomString
+  generateRandomString,
 }
