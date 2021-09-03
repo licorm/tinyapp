@@ -226,6 +226,7 @@ app.post('/login', (req, res) => {
     return;
   }
 
+  //setting encrypted cookie
   req.session.userID = userID;
  
   res.redirect('/urls');
