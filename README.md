@@ -5,9 +5,13 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-!["screenshot description"](#)
+!["screenshot of main URLs page"](https://github.com/licorm/tinyapp/blob/master/docs/urls_page.png?raw=true)
 
-!["screenshot description"](#)
+!["screenshot of login page"](https://github.com/licorm/tinyapp/blob/master/docs/login_page.png?raw=true)
+
+!["screenshot of create new URL page"](https://github.com/licorm/tinyapp/blob/master/docs/urls_new.png?raw=true)
+
+!["screenshot showing new short URL with long URL"](https://github.com/licorm/tinyapp/blob/master/docs/urls_show.png?raw=true)
 
 ## Dependencies
 
