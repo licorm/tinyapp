@@ -52,7 +52,12 @@ const users = {
 
 //hello page
 app.get('/', (req, res) => {
-  res.send('Hello!');
+  if (!req.session.userID) {
+    res.redirect('/login');
+    return;
+  }
+
+  res.redirect('/urls');
 });
 
 //adding additional endpoints to view our possible urls
@@ -81,6 +86,7 @@ app.get('/urls', (req,res) => {
 app.get('/urls/new', (req, res) => {
   if (!req.session.userID) {
     res.redirect('/login');
+    return;
   }
   const templateVars = { userID: users[req.session.userID] };
   res.render('urls_new', templateVars);
@@ -101,14 +107,21 @@ app.get('/urls/:shortURL', (req, res) => {
     return;
   }
 
-  const userID = req.session.userID;
+  const userID = (req.session.userID).toString();
   const urlsToView = urlsForUser(userID, urlDatabase);
-  for (const url in urlsToView) {
-    if (!url === shortURL) {
-      res.status(400).send("You don't have access to that URL");
-    }
+
+  if (Object.keys(urlsToView).length === 0) {
+    res.status(400).send("You don't have access to that URL");
+    return;
   }
 
+  for (const url in urlsToView) {
+    if (url !== shortURL || Object.keys(urlsToView).length === 0) {
+      res.status(400).send("You don't have access to that URL");
+      return;
+    }
+  }
+  console.log(urlsToView);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[shortURL].longURL,
